@@ -88,8 +88,13 @@ void ofxRemoteCameraClient::update(){
 			auxPixels=tmp;
 			/******************/
 			
-			if(useTexture)
+			if(useTexture){
+				if ( texture.getTextureData().glType != getGLCode(requestedImageType)){
+					texture.clear();
+					texture.allocate(camWidth,camHeight, getGLCode(requestedImageType));
+				}
 				texture.loadData((unsigned char*)pixels,requestedWidth,requestedHeight, getGLCode(requestedImageType));
+			}
 			frameNew=true;
 			newData=false;
 			unlock();
@@ -130,10 +135,9 @@ void ofxRemoteCameraClient::threadedFunction(){
 			
 			if(sendData(client->TCPClient,(unsigned char*)msg.c_str(), MSG_SIZE)>0){
 				if(verbose)cout << "SIZE:";	
-				string s;
-				s.resize(MSG_SIZE);
-				if(receiveData(client->TCPClient,(unsigned char*)s.c_str(),MSG_SIZE)>0){
-					intSize=ofToInt(s);
+				char s2[MSG_SIZE];
+				if(receiveData(client->TCPClient,(unsigned char*)s2,MSG_SIZE)>0){
+					intSize = ofToInt( string( s2 ) );
 					if(verbose)cout<< " "<< intSize<<"\n";
 					lock();
 					if(verbose)cout <<"START RECEIVING DATA\n";
