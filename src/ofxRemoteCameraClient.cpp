@@ -304,7 +304,7 @@ void ofxRemoteCameraClient::close(){
 		client->close();
 		delete client;
 	}
-	stopThread(true);
+	stopThread();
 	free(pixels);
 	free(auxPixels);
 	free(compressedData);
